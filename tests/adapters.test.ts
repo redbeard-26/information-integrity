@@ -47,7 +47,7 @@ describe("FARA eFile", () => {
     const waits: number[] = [];
     const { impl, calls } = router([
       ["/Registrants/json/Active", () => json(active)],
-      ["/ForeignPrincipals/json/Active/7", () => json({ FOREIGNPRINCIPALS_ACTIVE: { ROW: { Foreign_Principal: "Example Ministry", Country_Location_Represented: "RUSSIA" } } })],
+      ["/ForeignPrincipals/json/Active/7", () => json({ ROWSET: { ROW: { REG_NUMBER: 7, FP_NAME: "Example Ministry", COUNTRY_NAME: "RUSSIA" } } })],
     ]);
     const context = { ...ctx(impl), sleep: async (ms: number) => { waits.push(ms); } };
     const page = await faraAdapter.search!("rossiya media", { limit: 5 }, context);

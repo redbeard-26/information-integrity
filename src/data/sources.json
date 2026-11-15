@@ -145,7 +145,14 @@
           "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
         }
       },
-      "smoke_tests": []
+      "smoke_tests": [
+        {
+          "date": "2026-11-15",
+          "mode": "provider response fetched in a cloud browser, adapter run on the saved payload (tests/real-payloads.test.ts); the adapter's own HTTP request is not yet live-tested",
+          "operation": "search \"COVID vaccine study\"",
+          "result": "2 items in the first 44 KB of the feed parsed; 1 match: \"Florida’s Surgeon General Spins State COVID-19 Vaccine Comparison Study\""
+        }
+      ]
     },
     {
       "id": "fullfact-feed",
@@ -214,7 +221,14 @@
           "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
         }
       },
-      "smoke_tests": []
+      "smoke_tests": [
+        {
+          "date": "2026-11-15",
+          "mode": "provider response fetched in a cloud browser, adapter run on the saved payload (tests/real-payloads.test.ts); the adapter's own HTTP request is not yet live-tested",
+          "operation": "search \"NHS waiting lists\"",
+          "result": "10 items parsed; 1 match: \"Not everyone on NHS waiting lists is ‘not able to work properly’\""
+        }
+      ]
     },
     {
       "id": "leadstories-feed",
@@ -283,7 +297,14 @@
           "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
         }
       },
-      "smoke_tests": []
+      "smoke_tests": [
+        {
+          "date": "2026-11-15",
+          "mode": "provider response fetched in a cloud browser, adapter run on the saved payload (tests/real-payloads.test.ts); the adapter's own HTTP request is not yet live-tested",
+          "operation": "search \"AI video\"",
+          "result": "3 Atom entries parsed with category terms; 1 match: \"Fact Check: Viral Video Of People Sleeping In US Airport During Ground Stop Is NOT Real -- AI Made It\""
+        }
+      ]
     },
     {
       "id": "maldita-feed",
@@ -352,7 +373,14 @@
           "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
         }
       },
-      "smoke_tests": []
+      "smoke_tests": [
+        {
+          "date": "2026-11-15",
+          "mode": "provider response fetched in a cloud browser, adapter run on the saved payload (tests/real-payloads.test.ts); the adapter's own HTTP request is not yet live-tested",
+          "operation": "search \"vídeo IA\"",
+          "result": "6 items parsed; 2 matches, first about an AI video of a Ukrainian soldier"
+        }
+      ]
     },
     {
       "id": "altnews-feed",
@@ -420,7 +448,14 @@
           "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
         }
       },
-      "smoke_tests": []
+      "smoke_tests": [
+        {
+          "date": "2026-11-15",
+          "mode": "provider response fetched in a cloud browser, adapter run on the saved payload (tests/real-payloads.test.ts); the adapter's own HTTP request is not yet live-tested",
+          "operation": "search \"doctored AI video\"",
+          "result": "3 items parsed; 1 match: a columnist's interview video doctored with AI"
+        }
+      ]
     },
     {
       "id": "boom-feed",
@@ -488,7 +523,14 @@
           "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
         }
       },
-      "smoke_tests": []
+      "smoke_tests": [
+        {
+          "date": "2026-11-15",
+          "mode": "provider response fetched in a cloud browser, adapter run on the saved payload (tests/real-payloads.test.ts); the adapter's own HTTP request is not yet live-tested",
+          "operation": "search \"deepfake army\"",
+          "result": "4 items parsed; 2 matches, first \"Deepfakes Targeting Indian Army Personnel Shared Amid Kulgam Attack\""
+        }
+      ]
     },
     {
       "id": "aosfatos-feed",
@@ -556,7 +598,14 @@
           "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
         }
       },
-      "smoke_tests": []
+      "smoke_tests": [
+        {
+          "date": "2026-11-15",
+          "mode": "provider response fetched in a cloud browser, adapter run on the saved payload (tests/real-payloads.test.ts); the adapter's own HTTP request is not yet live-tested",
+          "operation": "search \"INSS aposentados\"",
+          "result": "6 items parsed (entity-escaped HTML stripped); 1 match about a 2016 INSS report"
+        }
+      ]
     },
     {
       "id": "stopfake-feed",
@@ -626,7 +675,14 @@
           "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
         }
       },
-      "smoke_tests": []
+      "smoke_tests": [
+        {
+          "date": "2026-11-15",
+          "mode": "provider response fetched in a cloud browser, adapter run on the saved payload (tests/real-payloads.test.ts); the adapter's own HTTP request is not yet live-tested",
+          "operation": "search \"Zelensky fake\"",
+          "result": "10 items parsed; 3 matches, first a false claim about Zelensky's trips abroad"
+        }
+      ]
     },
     {
       "id": "dubawa-feed",
@@ -694,7 +750,14 @@
           "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
         }
       },
-      "smoke_tests": []
+      "smoke_tests": [
+        {
+          "date": "2026-11-15",
+          "mode": "provider response fetched in a cloud browser, adapter run on the saved payload (tests/real-payloads.test.ts); the adapter's own HTTP request is not yet live-tested",
+          "operation": "search \"term limits\"",
+          "result": "10 items parsed (double-encoded text repaired); 1 match about term limits in The Gambia"
+        }
+      ]
     },
     {
       "id": "fara-efile-api",
@@ -762,7 +825,14 @@
           "reason": "Endpoint and JSON shape verified against the live response and docs; not run through this adapter live"
         }
       },
-      "smoke_tests": []
+      "smoke_tests": [
+        {
+          "date": "2026-11-15",
+          "mode": "provider response fetched in a cloud browser, adapter run on the saved payload (tests/real-payloads.test.ts); the adapter's own HTTP request is not yet live-tested",
+          "operation": "search \"qatar\"; get \"7519\"",
+          "result": "212 registrants in the first 39 KB parsed; 1 match, registration 7519, foreign principal QatarEnergy (QATAR)"
+        }
+      ]
     },
     {
       "id": "checkfirst-radar-api",

@@ -16,7 +16,7 @@ The request text is lower-cased and matched against keyword cues. Cues match who
 
 The type with the most matching cues gets weight 1; other matched types get 0.5 (or 1 if tied). A request with no cue defaults to `claim_check` and is marked `defaulted: true`.
 
-Regions: United States, United Kingdom, Europe, Russia and Ukraine, Taiwan, China, India, Latin America, Spain, Middle East and North Africa, Africa, Philippines, each with place names and other cues. Languages: zh, ar, ru and hi are also detected from script; es, pt and fr from language names. The full cue lists are in `src/lib/recommend.ts`.
+Regions: United States, United Kingdom, Europe, Russia and Ukraine, Taiwan, China, India, Latin America, Spain, Middle East and North Africa, Africa, Philippines, each with place names and other cues. Languages: zh, ar, ru and hi are also detected from script; es from ¿, ¡ or ñ; pt from ã or õ; es, pt and fr also from language names. Spanish and Portuguese request words ("es verdad", "vídeo", "hecho con IA", "é verdade") count as cues too. The full cue lists are in `src/lib/recommend.ts`.
 
 ## Step 2: score each source
 

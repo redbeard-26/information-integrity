@@ -1,4 +1,4 @@
-import { queryTerms } from "@/lib/adapters/feeds";
+import { minimumMatches, queryTerms } from "@/lib/adapters/feeds";
 import { type Adapter, type AdapterContext, ProviderError, type ResourceItem, checkStatus, fetchWithTimeout } from "@/lib/adapters/types";
 
 // Data: https://github.com/correctiv/ru-sanctions-dashboard (MIT). Built from OpenSanctions; last updated January 2024.
@@ -103,7 +103,7 @@ export const correctivAdapter: Adapter = {
     const rows = await load(ctx);
     const hits = rows
       .map((row, index) => ({ row, index, score: terms.filter((term) => row.name.toLowerCase().includes(term)).length }))
-      .filter((hit) => hit.score > 0)
+      .filter((hit) => hit.score >= minimumMatches(terms))
       .sort((a, b) => b.score - a.score || a.index - b.index);
     const offset = Math.max(Number(cursor ?? 0) || 0, 0);
     return {

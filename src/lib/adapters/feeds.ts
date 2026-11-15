@@ -36,13 +36,44 @@ export interface FeedEntry {
 
 const ENTITIES: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " };
 
+const MARKUP = /<\/?[a-z][a-z0-9:-]*(?:\s[^<>]*)?\/?>/gi;
+
+// Windows-1252 bytes 0x80-0x9F; the five undefined ones map to themselves.
+const CP1252 = "\u20ac\u0081\u201a\u0192\u201e\u2026\u2020\u2021\u02c6\u2030\u0160\u2039\u0152\u008d\u017d\u008f\u0090\u2018\u2019\u201c\u201d\u2022\u2013\u2014\u02dc\u2122\u0161\u203a\u0153\u009d\u017e\u0178";
+const MOJIBAKE = /[\u00c2-\u00c6\u00e2][\u0080-\u00bf\u0152\u0153\u0160\u0161\u0178\u017d\u017e\u0192\u02c6\u02dc\u2013-\u2122]/;
+
+/**
+ * Some feeds (DUBAWA's, for one) publish UTF-8 text that was decoded as Windows-1252 and re-encoded,
+ * so "’" arrives as "â€™". When a field looks like that and maps back to valid UTF-8, the original text is restored.
+ */
+export function repairMojibake(text: string): string {
+  if (!MOJIBAKE.test(text)) return text;
+  const bytes: number[] = [];
+  for (const char of text) {
+    const code = char.codePointAt(0)!;
+    if (code < 0x80 || (code >= 0xa0 && code <= 0xff)) bytes.push(code);
+    else {
+      const index = CP1252.indexOf(char);
+      if (index < 0) return text;
+      bytes.push(0x80 + index);
+    }
+  }
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(new Uint8Array(bytes));
+  } catch {
+    return text;
+  }
+}
+
 export function decodeText(raw: string): string {
-  return raw
-    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
-    .replace(/<[^>]*>/g, " ")
+  // Mojibake is repaired before entities are decoded, so a correct "&#8230;" cannot spoil the repair.
+  const stripped = repairMojibake(raw.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").replace(/<[^>]*>/g, " "));
+  return stripped
     .replace(/&#x([0-9a-f]+);/gi, (_m, hex: string) => String.fromCodePoint(parseInt(hex, 16)))
     .replace(/&#(\d+);/g, (_m, dec: string) => String.fromCodePoint(Number(dec)))
     .replace(/&([a-z]+);/gi, (match, name: string) => ENTITIES[name.toLowerCase()] ?? match)
+    // Entity-escaped HTML (Aos Fatos sends <p> as &lt;p&gt;) only becomes markup after decoding.
+    .replace(MARKUP, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -62,6 +93,13 @@ function allTags(block: string, name: string): string[] {
   return [...block.matchAll(new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)</${name}>`, "gi"))]
     .map((match) => decodeText(match[1]))
     .filter(Boolean);
+}
+
+/** RSS <category>text</category>, Atom <category term="..."/>, and BOOM's "Fact Check,Top Stories" lists. */
+function categories(block: string): string[] {
+  const atom = [...block.matchAll(/<category\b[^>]*\bterm=["']([^"']+)["'][^>]*>/gi)].map((match) => decodeText(match[1]));
+  const values = [...allTags(block, "category"), ...atom].flatMap((value) => value.split(",")).map((value) => value.trim());
+  return [...new Set(values.filter(Boolean))];
 }
 
 function atomLink(block: string): string | null {
@@ -90,7 +128,7 @@ export function parseFeed(xml: string): FeedEntry[] {
       title: tag(block, ["title"]),
       summary: tag(block, ["description", "summary", "content:encoded", "content"]),
       published: toIso(tag(block, ["pubDate", "published", "updated", "dc:date"])),
-      categories: allTags(block, "category"),
+      categories: categories(block),
     };
   }).filter((entry) => entry.id);
 }
@@ -115,11 +153,26 @@ async function loadFeed(spec: FeedSpec, ctx: AdapterContext): Promise<FeedEntry[
   return entries;
 }
 
-/** Lower-cased search terms. Words of two letters or fewer are ignored unless the query has no others. */
+// Function words that say nothing about the subject (English, Spanish, Portuguese). Words of two letters or fewer are dropped anyway.
+const STOPWORDS = new Set(
+  (
+    "the and for are was were this that these those with from have has had not but what which who whom whose why how when where " +
+    "does did its they them their there been being into about than then any all can could would should will our your you his her she him " +
+    "los las del que por con una para como esta este son fue " +
+    "não com uma dos das pelo pela"
+  ).split(" "),
+);
+
+/** Lower-cased search terms: function words are dropped, and so are words of two letters or fewer unless the query has no others. */
 export function queryTerms(query: string): string[] {
   const words = query.toLowerCase().normalize("NFKC").split(/[^\p{L}\p{N}]+/u).filter(Boolean);
-  const long = words.filter((word) => word.length > 2 || /[^\u0000-ɏ]/.test(word));
+  const long = words.filter((word) => (word.length > 2 || /[^\u0000-ɏ]/.test(word)) && !STOPWORDS.has(word));
   return [...new Set(long.length ? long : words)];
+}
+
+/** A query of four or more terms (a whole question, say) needs two of them to match, so one common word is not a hit. */
+export function minimumMatches(terms: string[]): number {
+  return terms.length >= 4 ? 2 : 1;
 }
 
 export function matchScore(entry: FeedEntry, terms: string[]): number {
@@ -154,7 +207,7 @@ export function makeFeedAdapter(spec: FeedSpec): Adapter {
       const entries = await loadFeed(spec, ctx);
       const ranked = entries
         .map((entry) => ({ entry, score: matchScore(entry, terms) }))
-        .filter((hit) => hit.score > 0)
+        .filter((hit) => hit.score >= minimumMatches(terms))
         .sort((a, b) => b.score - a.score || (b.entry.published ?? "").localeCompare(a.entry.published ?? ""));
       const offset = Math.max(Number(cursor ?? 0) || 0, 0);
       const page = ranked.slice(offset, offset + limit);

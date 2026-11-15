@@ -11,6 +11,8 @@ export const REQUEST_TYPES = {
       "claim", "true", "false", "fact", "fact-check", "factcheck", "fact check", "rumor", "rumour", "hoax", "debunk", "myth",
       "misleading", "accurate", "accuracy", "statistic", "quote", "said", "is it true", "did", "really", "verify", "real or fake",
       "fake news", "misinformation", "disinformation", "viral", "whatsapp", "forwarded", "chain message", "scam",
+      // Spanish and Portuguese
+      "es verdad", "es real", "es cierto", "falso", "falsa", "bulo", "desinformación", "é verdade", "boato", "desinformação", "mentira",
     ],
   },
   media_authenticity: {
@@ -20,6 +22,8 @@ export const REQUEST_TYPES = {
       "ai-generated image", "ai generated image", "synthetic", "manipulated", "doctored", "photoshopped", "edited",
       "provenance", "c2pa", "content credentials", "screenshot", "face swap", "voice clone", "cloned voice",
       ".jpg", ".jpeg", ".png", ".webp", ".mp4", ".mov", ".mp3", ".wav",
+      // Spanish and Portuguese
+      "vídeo", "imagen", "imagem", "foto", "fotografía", "con ia", "com ia", "hecho con ia", "generado con ia", "gerado por ia", "manipulado",
     ],
   },
   ai_text: {
@@ -55,7 +59,7 @@ export const REGION_CUES: Record<string, string[]> = {
   "United States": ["united states", "u.s.", "usa", "american", "congress", "senate", "white house", "biden", "trump", "fbi", "cdc", "medicare"],
   "United Kingdom": ["united kingdom", "uk", "britain", "british", "england", "scotland", "nhs", "westminster", "starmer"],
   Europe: ["europe", "european", "eu", "brussels", "germany", "german", "france", "french", "italy", "poland", "netherlands", "belgium"],
-  "Russia and Ukraine": ["russia", "russian", "kremlin", "putin", "ukraine", "ukrainian", "moscow", "kyiv", "zelensky"],
+  "Russia and Ukraine": ["russia", "russian", "kremlin", "putin", "ukraine", "ukrainian", "moscow", "kyiv", "zelensky", "rusia", "ucrania", "ucraniano", "rússia", "ucrânia"],
   Taiwan: ["taiwan", "taiwanese", "taipei", "line app", "line message"],
   China: ["china", "chinese", "beijing", "ccp", "weibo", "wechat"],
   India: ["india", "indian", "modi", "delhi", "mumbai", "hindi", "bjp"],
@@ -72,8 +76,8 @@ export const LANGUAGE_CUES: Record<string, { words: string[]; script?: RegExp }>
   ar: { words: ["arabic"], script: /[؀-ۿ]/ },
   ru: { words: ["russian-language", "in russian"], script: /[Ѐ-ӿ]/ },
   hi: { words: ["hindi"], script: /[ऀ-ॿ]/ },
-  es: { words: ["spanish", "español", "en español"] },
-  pt: { words: ["portuguese", "português"] },
+  es: { words: ["spanish", "español", "en español"], script: /[¿¡ñ]/ },
+  pt: { words: ["portuguese", "português"], script: /[ãõ]/ },
   fr: { words: ["in french", "french-language", "français"] },
 };
 

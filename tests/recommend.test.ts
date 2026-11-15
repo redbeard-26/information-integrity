@@ -29,6 +29,18 @@ describe("classifyRequest", () => {
   });
 });
 
+describe("Spanish and Portuguese requests", () => {
+  it("detects the language from ¿ or ã and routes to the regional checker", () => {
+    const es = recommendSources("¿Es real el vídeo hecho con IA del soldado ucraniano que llora?", {}, keyless);
+    expect(es.classification.languages.map((l) => l.language)).toContain("es");
+    expect(es.classification.request_types[0].type).toBe("media_authenticity");
+    expect(ids(es)).toContain("maldita-feed");
+    const pt = recommendSources("É verdade que o INSS vai cobrar os aposentados? Não sei.", {}, keyless);
+    expect(pt.classification.languages.map((l) => l.language)).toContain("pt");
+    expect(ids(pt)).toContain("aosfatos-feed");
+  });
+});
+
 describe("recommendSources", () => {
   it("is deterministic", () => {
     const request = "Is the claim that the NHS waiting list doubled true?";

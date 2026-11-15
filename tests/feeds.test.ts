@@ -35,7 +35,7 @@ describe("feed parsing", () => {
   });
 
   it("builds search terms from words longer than two letters", () => {
-    expect(queryTerms("Is it true vaccines have microchips?")).toEqual(["true", "vaccines", "have", "microchips"]);
+    expect(queryTerms("Is it true vaccines have microchips?")).toEqual(["true", "vaccines", "microchips"]);
     expect(queryTerms("疫苗 謠言")).toEqual(["疫苗", "謠言"]);
   });
 });

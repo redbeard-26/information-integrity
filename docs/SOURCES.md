@@ -4,7 +4,7 @@
 
 ## Status
 
-Each source moves through `discovered → documentation_verified → access_approved → implemented → live_tested`. Only a recorded live smoke test (date, access mode, operation, result, with no credentials or restricted content) moves a source to `live_tested`. Run them with `LIVE_SMOKE=1 npx vitest run tests/live.test.ts`.
+Each source moves through `discovered → documentation_verified → access_approved → implemented → live_tested`. Only a recorded live smoke test (date, access mode, operation, result, with no credentials or restricted content) moves a source to `live_tested`. Run them with `LIVE_SMOKE=1 npx vitest run tests/live.test.ts`. Where the build environment cannot reach a provider, its real response is saved under `tests/fixtures/real/` and `tests/real-payloads.test.ts` runs the adapter on it; those runs are recorded in `smoke_tests` but do not change the status, because the adapter's own request was not made live.
 
 The build environment's network proxy only reaches GitHub, so CORRECTIV is the only source live-tested so far. The other keyless endpoints were confirmed to answer on 2026-11-15 by fetching them directly, but the adapters have not yet run against them; they stay `implemented` until `tests/live.test.ts` passes from a host with open network access.
 

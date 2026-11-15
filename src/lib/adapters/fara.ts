@@ -88,12 +88,18 @@ export const faraAdapter: Adapter = {
   capabilities: ["search", "get"],
 
   async search(query, { limit, cursor }, ctx) {
-    const terms = queryTerms(query);
-    const matches = (await activeRegistrants(ctx))
-      .map((row) => {
-        const name = `${row.Name ?? ""} ${row.Business_Name ?? ""}`.toLowerCase();
-        return { row, score: terms.filter((term) => name.includes(term)).length };
-      })
+    // Every FARA registrant acts in the United States, so naming the country narrows nothing.
+    const terms = queryTerms(query.replace(/\b(the\s+)?(united\s+states(\s+of\s+america)?|u\.s\.a?\.?|usa|america)(?=[^a-z]|$)/gi, " "));
+    const registrants = (await activeRegistrants(ctx)).map((row) => ({ row, name: `${row.Name ?? ""} ${row.Business_Name ?? ""}`.toLowerCase() }));
+    // Rare terms (a company's own name) outweigh common ones ("united", "states"): each matched term scores idf squared.
+    const weight = new Map(
+      terms.map((term) => {
+        const df = registrants.filter((entry) => entry.name.includes(term)).length;
+        return [term, df ? Math.log(1 + registrants.length / df) ** 2 : 0];
+      }),
+    );
+    const matches = registrants
+      .map(({ row, name }) => ({ row, score: terms.filter((term) => name.includes(term)).reduce((sum, term) => sum + (weight.get(term) ?? 0), 0) }))
       .filter((hit) => hit.score > 0)
       .sort((a, b) => b.score - a.score || String(a.row.Name).localeCompare(String(b.row.Name)));
     const offset = Math.max(Number(cursor ?? 0) || 0, 0);
@@ -111,8 +117,8 @@ export const faraAdapter: Adapter = {
     const principals = rows(await get(ctx, `/ForeignPrincipals/json/Active/${id}`))
       .map((entry) => {
         const record = entry as Record<string, unknown>;
-        const name = record.Foreign_Principal ?? record.FP_Name ?? record.Name;
-        const country = record.Country_Location_Represented ?? record.Country_Name ?? record.Country;
+        const name = record.FP_NAME ?? record.Foreign_Principal ?? record.FP_Name ?? record.Name;
+        const country = record.COUNTRY_NAME ?? record.Country_Location_Represented ?? record.Country_Name ?? record.Country;
         return name ? `${name}${country ? ` (${country})` : ""}` : null;
       })
       .filter((value): value is string => !!value);
