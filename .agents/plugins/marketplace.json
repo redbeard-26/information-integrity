@@ -1,0 +1,20 @@
+{
+  "name": "asfai",
+  "interface": {
+    "displayName": "ASFAI"
+  },
+  "plugins": [
+    {
+      "name": "asfai-information-integrity",
+      "source": {
+        "source": "local",
+        "path": "./plugins/asfai-information-integrity"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "NONE"
+      },
+      "category": "Research"
+    }
+  ]
+}

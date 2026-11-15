@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "asfai-information-integrity",
+  "displayName": "ASFAI Information Integrity",
+  "version": "0.1.0",
+  "description": "Find organizations that study, protect and strengthen the information environment, from the Information Integrity Navigator, through one remote MCP connector.",
+  "author": {
+    "name": "ASFAI",
+    "url": "https://github.com/redbeard-26"
+  },
+  "homepage": "https://constitution.asfai.org/information-integrity",
+  "repository": "https://github.com/redbeard-26/information-integrity",
+  "license": "Apache-2.0",
+  "keywords": ["information-integrity", "disinformation", "fact-checking", "directory", "research"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}

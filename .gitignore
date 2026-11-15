@@ -1,0 +1,23 @@
+# Dependencies and generated output
+node_modules/
+dist/
+build/
+.next/
+coverage/
+*.tsbuildinfo
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Raw collection files and source workbooks stay local
+data/raw/
+*.xlsx
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.vercel

@@ -1,0 +1,28 @@
+{
+  "name": "asfai-information-integrity",
+  "version": "0.1.0",
+  "description": "Find organizations that study, protect and strengthen the information environment, from the Information Integrity Navigator, through one remote MCP connector.",
+  "author": {
+    "name": "ASFAI",
+    "url": "https://github.com/redbeard-26"
+  },
+  "homepage": "https://constitution.asfai.org/information-integrity",
+  "repository": "https://github.com/redbeard-26/information-integrity",
+  "license": "Apache-2.0",
+  "keywords": ["information-integrity", "disinformation", "fact-checking", "directory", "research"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "ASFAI Information Integrity",
+    "shortDescription": "Search the Information Integrity Navigator's organizations.",
+    "longDescription": "Search and filter the organizations in the Information Integrity Navigator by topic, region, organization type, operating status, methods and threat actors, and open full records with their source links. Records are source claims from the Navigator's workbook and are not independently verified.",
+    "developerName": "ASFAI",
+    "category": "Research",
+    "capabilities": ["Directory search", "Organization profiles", "Source links"],
+    "defaultPrompt": [
+      "Which organizations track foreign information manipulation in Africa?",
+      "Find active fact-checkers headquartered in Brazil.",
+      "Who works on deepfake detection, and what are their websites?"
+    ]
+  },
+  "mcpServers": "./.mcp.json"
+}

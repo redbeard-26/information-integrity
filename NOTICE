@@ -1,0 +1,9 @@
+ASFAI Information Integrity
+Copyright 2026 ASFAI contributors
+
+The organization records in src/data/organizations.json were collected from the
+Information Integrity Navigator (https://www.mitzinavigator.com/information-integrity/),
+part of Mitzi Perdue's Navigators, which presents the "Navigator Export.xlsx" workbook.
+The Navigator does not state reuse terms for its data. The Apache-2.0 license in this
+repository covers the code, not that data. Organization names and marks belong to their
+owners; no endorsement is implied.

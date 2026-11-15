@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "asfai_information_integrity": {
+      "type": "http",
+      "url": "https://constitution.asfai.org/information-integrity/api/mcp"
+    }
+  }
+}
