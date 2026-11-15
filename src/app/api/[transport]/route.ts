@@ -8,7 +8,7 @@ const handler = createMcpHandler(
   (server) => {
     registerInformationIntegrityTools(server);
   },
-  { serverInfo: { name: "asfai-information-integrity", version: "0.1.0" } },
+  { serverInfo: { name: "asfai-information-integrity", version: "0.2.0" } },
   { basePath: "/api", maxDuration: 30, verboseLogs: false },
 );
 

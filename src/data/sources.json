@@ -1,73 +1,1525 @@
 {
   "version": "2026-11-15",
-  "basis": "Seeded from issue #1 (survey dated 2026-11-12). Interfaces are documented by the provider, not live-tested, unless status says otherwise.",
-  "status_order": ["discovered", "documentation_verified", "access_approved", "implemented", "live_tested"],
+  "basis": "Seeded from issue #1 (survey dated 2026-11-12); provider documentation re-read and fact-checker feeds added on 2026-11-15. Ranking criteria: docs/RANKING.md. Routing: docs/ROUTING.md.",
+  "status_order": [
+    "discovered",
+    "documentation_verified",
+    "access_approved",
+    "implemented",
+    "live_tested"
+  ],
   "sources": [
     {
       "id": "cofacts-graphql",
       "offering": "Cofacts GraphQL API",
-      "organizations": ["Cofacts"],
+      "organizations": [
+        "Cofacts"
+      ],
       "interface": "api",
       "protocol": "GraphQL over HTTPS",
       "endpoint": "https://cofacts-api.g0v.tw/graphql",
-      "evidence_urls": ["https://github.com/cofacts/rumors-api", "https://github.com/cofacts/rumors-api/blob/master/LEGAL.md"],
+      "evidence_urls": [
+        "https://github.com/cofacts/rumors-api",
+        "https://github.com/cofacts/rumors-api/blob/master/LEGAL.md"
+      ],
       "access": "Client app-id issued by the Cofacts working group on request (LEGAL.md section 3)",
       "auth_model": "app_id_header",
       "cost": "Free",
       "scope": "Crowd-sourced fact-check replies to messages reported in Taiwan (mostly Traditional Chinese)",
-      "languages": ["zh-TW"],
+      "languages": [
+        "zh-TW"
+      ],
       "rights": "Data is CC BY-SA 4.0 with the attribution statement in LEGAL.md; automated scraping of the website is prohibited",
       "status": "implemented",
-      "adapter": "cofacts",
+      "adapter": "cofacts-graphql",
       "last_checked": "2026-11-15",
-      "notes": "Adapter built against the open-source schema; not live-tested because this build environment cannot reach the endpoint."
+      "notes": "Adapter built against the open-source schema; not live-tested because this build environment cannot reach the endpoint.",
+      "fit": {
+        "request_types": {
+          "claim_check": "primary",
+          "media_authenticity": "secondary"
+        },
+        "regions": [
+          "Taiwan"
+        ],
+        "languages": [
+          "zh"
+        ],
+        "media": [
+          "text",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 2,
+          "reason": "Needs an app id issued on request by the Cofacts working group"
+        },
+        "relevance": {
+          "score": 5,
+          "reason": "Itemized replies to reported messages, with labels such as RUMOR"
+        },
+        "evidence": {
+          "score": 4,
+          "reason": "Crowd-sourced replies under documented community review"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Messages and replies added daily"
+        },
+        "rights": {
+          "score": 5,
+          "reason": "CC BY-SA 4.0"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "Open-source GraphQL schema verified; not live-tested"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "factcheckorg-feed",
+      "offering": "FactCheck.org feed",
+      "organizations": [
+        "FactCheck.org"
+      ],
+      "interface": "feed",
+      "protocol": "RSS/Atom over HTTPS",
+      "endpoint": "https://www.factcheck.org/feed/",
+      "evidence_urls": [
+        "https://www.factcheck.org/feed/",
+        "https://www.factcheck.org/copyright-policy/"
+      ],
+      "access": "Public feed, no key",
+      "auth_model": "none",
+      "cost": "Free",
+      "scope": "U.S. political claims",
+      "languages": [
+        "en"
+      ],
+      "rights": "Headline, link and date (and a short excerpt where allowed), attributed; full text stays on the provider's site",
+      "status": "implemented",
+      "adapter": "factcheckorg-feed",
+      "last_checked": "2026-11-15",
+      "notes": "Whole-site feed; the site publishes only fact-checks.",
+      "fit": {
+        "request_types": {
+          "claim_check": "primary",
+          "media_authenticity": "secondary"
+        },
+        "regions": [
+          "United States"
+        ],
+        "languages": [
+          "en"
+        ],
+        "media": [
+          "text",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Public feed, no key"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Itemized fact-checks, but only the items currently in the feed; there is no archive search"
+        },
+        "evidence": {
+          "score": 5,
+          "reason": "Editorial fact-checks with a published methodology; IFCN signatory"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Updated with each publication"
+        },
+        "rights": {
+          "score": 5,
+          "reason": "Copyright policy allows reprint with credit and a link"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "fullfact-feed",
+      "offering": "Full Fact feed",
+      "organizations": [
+        "Full Fact"
+      ],
+      "interface": "feed",
+      "protocol": "RSS/Atom over HTTPS",
+      "endpoint": "https://fullfact.org/feed/",
+      "evidence_urls": [
+        "https://fullfact.org/feed/",
+        "https://fullfact.org/api/license/"
+      ],
+      "access": "Public feed, no key",
+      "auth_model": "none",
+      "cost": "Free",
+      "scope": "UK claims: politics, health, economy, online viral content",
+      "languages": [
+        "en"
+      ],
+      "rights": "Headline, link and date (and a short excerpt where allowed), attributed; full text stays on the provider's site",
+      "status": "implemented",
+      "adapter": "fullfact-feed",
+      "last_checked": "2026-11-15",
+      "notes": "Excerpts switched off to respect Full Fact's licence.",
+      "fit": {
+        "request_types": {
+          "claim_check": "primary",
+          "media_authenticity": "secondary"
+        },
+        "regions": [
+          "United Kingdom"
+        ],
+        "languages": [
+          "en"
+        ],
+        "media": [
+          "text",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Public feed, no key"
+        },
+        "relevance": {
+          "score": 3,
+          "reason": "Feed mixes fact-checks with other articles; only recent items"
+        },
+        "evidence": {
+          "score": 5,
+          "reason": "Editorial fact-checks with a published methodology; IFCN signatory"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Updated with each publication"
+        },
+        "rights": {
+          "score": 3,
+          "reason": "Full Fact's licence asks for full, unmodified republication, so only headline, link and date are returned"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "leadstories-feed",
+      "offering": "Lead Stories feed",
+      "organizations": [
+        "Lead Stories"
+      ],
+      "interface": "feed",
+      "protocol": "RSS/Atom over HTTPS",
+      "endpoint": "https://leadstories.com/atom.xml",
+      "evidence_urls": [
+        "https://leadstories.com/atom.xml"
+      ],
+      "access": "Public feed, no key",
+      "auth_model": "none",
+      "cost": "Free",
+      "scope": "Viral online claims, mostly U.S. and international",
+      "languages": [
+        "en"
+      ],
+      "rights": "Headline, link and date (and a short excerpt where allowed), attributed; full text stays on the provider's site",
+      "status": "implemented",
+      "adapter": "leadstories-feed",
+      "last_checked": "2026-11-15",
+      "notes": null,
+      "fit": {
+        "request_types": {
+          "claim_check": "primary",
+          "media_authenticity": "secondary"
+        },
+        "regions": [
+          "United States",
+          "Global"
+        ],
+        "languages": [
+          "en"
+        ],
+        "media": [
+          "text",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Public feed, no key"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Itemized fact-checks, but only the items currently in the feed; there is no archive search"
+        },
+        "evidence": {
+          "score": 5,
+          "reason": "Editorial fact-checks with a published methodology; IFCN signatory"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Updated with each publication"
+        },
+        "rights": {
+          "score": 4,
+          "reason": "No restrictive terms found; headline, link and short excerpt from a public feed, with attribution"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "maldita-feed",
+      "offering": "Maldita.es Maldito Bulo feed",
+      "organizations": [
+        "Fundación Maldita.es"
+      ],
+      "interface": "feed",
+      "protocol": "RSS/Atom over HTTPS",
+      "endpoint": "https://maldita.es/malditobulo/feed/",
+      "evidence_urls": [
+        "https://maldita.es/malditobulo/feed/"
+      ],
+      "access": "Public feed, no key",
+      "auth_model": "none",
+      "cost": "Free",
+      "scope": "Hoaxes and viral claims in Spain and Spanish-language media",
+      "languages": [
+        "es"
+      ],
+      "rights": "Headline, link and date (and a short excerpt where allowed), attributed; full text stays on the provider's site",
+      "status": "implemented",
+      "adapter": "maldita-feed",
+      "last_checked": "2026-11-15",
+      "notes": "Uses the hoax-debunk section feed, not the whole site.",
+      "fit": {
+        "request_types": {
+          "claim_check": "primary",
+          "media_authenticity": "secondary"
+        },
+        "regions": [
+          "Spain",
+          "Europe"
+        ],
+        "languages": [
+          "es"
+        ],
+        "media": [
+          "text",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Public feed, no key"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Itemized fact-checks, but only the items currently in the feed; there is no archive search"
+        },
+        "evidence": {
+          "score": 5,
+          "reason": "Editorial fact-checks with a published methodology; IFCN signatory"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Updated with each publication"
+        },
+        "rights": {
+          "score": 4,
+          "reason": "No restrictive terms found; headline, link and short excerpt from a public feed, with attribution"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "altnews-feed",
+      "offering": "Alt News feed",
+      "organizations": [
+        "Alt News"
+      ],
+      "interface": "feed",
+      "protocol": "RSS/Atom over HTTPS",
+      "endpoint": "https://www.altnews.in/feed/",
+      "evidence_urls": [
+        "https://www.altnews.in/feed/"
+      ],
+      "access": "Public feed, no key",
+      "auth_model": "none",
+      "cost": "Free",
+      "scope": "Viral claims and manipulated media in India",
+      "languages": [
+        "en"
+      ],
+      "rights": "Headline, link and date (and a short excerpt where allowed), attributed; full text stays on the provider's site",
+      "status": "implemented",
+      "adapter": "altnews-feed",
+      "last_checked": "2026-11-15",
+      "notes": "English site; Alt News Hindi has a separate site.",
+      "fit": {
+        "request_types": {
+          "claim_check": "primary",
+          "media_authenticity": "secondary"
+        },
+        "regions": [
+          "India"
+        ],
+        "languages": [
+          "en"
+        ],
+        "media": [
+          "text",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Public feed, no key"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Itemized fact-checks, but only the items currently in the feed; there is no archive search"
+        },
+        "evidence": {
+          "score": 5,
+          "reason": "Editorial fact-checks with a published methodology; IFCN signatory"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Updated with each publication"
+        },
+        "rights": {
+          "score": 4,
+          "reason": "No restrictive terms found; headline, link and short excerpt from a public feed, with attribution"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "boom-feed",
+      "offering": "BOOM fact-check feed",
+      "organizations": [
+        "BOOM"
+      ],
+      "interface": "feed",
+      "protocol": "RSS/Atom over HTTPS",
+      "endpoint": "https://www.boomlive.in/google_feeds.xml",
+      "evidence_urls": [
+        "https://www.boomlive.in/google_feeds.xml"
+      ],
+      "access": "Public feed, no key",
+      "auth_model": "none",
+      "cost": "Free",
+      "scope": "Viral claims and manipulated media in India",
+      "languages": [
+        "en"
+      ],
+      "rights": "Headline, link and date (and a short excerpt where allowed), attributed; full text stays on the provider's site",
+      "status": "implemented",
+      "adapter": "boom-feed",
+      "last_checked": "2026-11-15",
+      "notes": "The feed held only 4 items when checked.",
+      "fit": {
+        "request_types": {
+          "claim_check": "primary",
+          "media_authenticity": "secondary"
+        },
+        "regions": [
+          "India"
+        ],
+        "languages": [
+          "en"
+        ],
+        "media": [
+          "text",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Public feed, no key"
+        },
+        "relevance": {
+          "score": 3,
+          "reason": "Only the latest few fact-checks are in the feed"
+        },
+        "evidence": {
+          "score": 5,
+          "reason": "Editorial fact-checks with a published methodology; IFCN signatory"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Updated with each publication"
+        },
+        "rights": {
+          "score": 4,
+          "reason": "No restrictive terms found; headline, link and short excerpt from a public feed, with attribution"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "aosfatos-feed",
+      "offering": "Aos Fatos feed",
+      "organizations": [
+        "Aos Fatos"
+      ],
+      "interface": "feed",
+      "protocol": "RSS/Atom over HTTPS",
+      "endpoint": "https://www.aosfatos.org/noticias/feed/",
+      "evidence_urls": [
+        "https://www.aosfatos.org/noticias/feed/"
+      ],
+      "access": "Public feed, no key",
+      "auth_model": "none",
+      "cost": "Free",
+      "scope": "Claims in Brazilian politics and online",
+      "languages": [
+        "pt"
+      ],
+      "rights": "Headline, link and date (and a short excerpt where allowed), attributed; full text stays on the provider's site",
+      "status": "implemented",
+      "adapter": "aosfatos-feed",
+      "last_checked": "2026-11-15",
+      "notes": null,
+      "fit": {
+        "request_types": {
+          "claim_check": "primary",
+          "media_authenticity": "secondary"
+        },
+        "regions": [
+          "Latin America"
+        ],
+        "languages": [
+          "pt"
+        ],
+        "media": [
+          "text",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Public feed, no key"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Itemized fact-checks, but only the items currently in the feed; there is no archive search"
+        },
+        "evidence": {
+          "score": 5,
+          "reason": "Editorial fact-checks with a published methodology; IFCN signatory"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Updated with each publication"
+        },
+        "rights": {
+          "score": 4,
+          "reason": "No restrictive terms found; headline, link and short excerpt from a public feed, with attribution"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "stopfake-feed",
+      "offering": "StopFake feed (English)",
+      "organizations": [
+        "StopFake"
+      ],
+      "interface": "feed",
+      "protocol": "RSS/Atom over HTTPS",
+      "endpoint": "https://www.stopfake.org/en/feed/",
+      "evidence_urls": [
+        "https://www.stopfake.org/en/feed/"
+      ],
+      "access": "Public feed, no key",
+      "auth_model": "none",
+      "cost": "Free",
+      "scope": "Kremlin-linked disinformation about Ukraine",
+      "languages": [
+        "en"
+      ],
+      "rights": "Headline, link and date (and a short excerpt where allowed), attributed; full text stays on the provider's site",
+      "status": "implemented",
+      "adapter": "stopfake-feed",
+      "last_checked": "2026-11-15",
+      "notes": "Other language editions have their own feeds (not yet added).",
+      "fit": {
+        "request_types": {
+          "claim_check": "primary",
+          "media_authenticity": "secondary",
+          "narrative_tracking": "secondary"
+        },
+        "regions": [
+          "Russia and Ukraine",
+          "Europe"
+        ],
+        "languages": [
+          "en"
+        ],
+        "media": [
+          "text",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Public feed, no key"
+        },
+        "relevance": {
+          "score": 3,
+          "reason": "Feed mixes debunks with organisation news; only recent items"
+        },
+        "evidence": {
+          "score": 4,
+          "reason": "Editorial debunks with a documented method"
+        },
+        "freshness": {
+          "score": 4,
+          "reason": "Weekly-or-better publication"
+        },
+        "rights": {
+          "score": 4,
+          "reason": "No restrictive terms found; headline, link and short excerpt from a public feed, with attribution"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "dubawa-feed",
+      "offering": "DUBAWA feed",
+      "organizations": [
+        "DUBAWA"
+      ],
+      "interface": "feed",
+      "protocol": "RSS/Atom over HTTPS",
+      "endpoint": "https://dubawa.org/feed/",
+      "evidence_urls": [
+        "https://dubawa.org/feed/"
+      ],
+      "access": "Public feed, no key",
+      "auth_model": "none",
+      "cost": "Free",
+      "scope": "Claims in West Africa (Nigeria, Ghana and others)",
+      "languages": [
+        "en"
+      ],
+      "rights": "Headline, link and date (and a short excerpt where allowed), attributed; full text stays on the provider's site",
+      "status": "implemented",
+      "adapter": "dubawa-feed",
+      "last_checked": "2026-11-15",
+      "notes": "Feed also carries weekly round-ups.",
+      "fit": {
+        "request_types": {
+          "claim_check": "primary",
+          "media_authenticity": "secondary"
+        },
+        "regions": [
+          "Africa"
+        ],
+        "languages": [
+          "en"
+        ],
+        "media": [
+          "text",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Public feed, no key"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Itemized fact-checks, but only the items currently in the feed; there is no archive search"
+        },
+        "evidence": {
+          "score": 5,
+          "reason": "Editorial fact-checks with a published methodology; IFCN signatory"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Updated with each publication"
+        },
+        "rights": {
+          "score": 4,
+          "reason": "No restrictive terms found; headline, link and short excerpt from a public feed, with attribution"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "Feed confirmed on 2026-11-15 to serve current RSS/Atom items; adapter parses that format"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "fara-efile-api",
+      "offering": "FARA eFile API",
+      "organizations": [
+        "FARA Unit, National Security Division, U.S. Department of Justice",
+        "National Security Division, U.S. Department of Justice"
+      ],
+      "interface": "api",
+      "protocol": "REST (JSON) over HTTPS",
+      "endpoint": "https://efile.fara.gov/api/v1",
+      "evidence_urls": [
+        "https://efile.fara.gov/ords/fara/f?p=API:ENDPOINTS",
+        "https://efile.fara.gov/api/v1/Registrants/json/Active"
+      ],
+      "access": "Public, no key; 5 requests per 10 seconds",
+      "auth_model": "none",
+      "cost": "Free",
+      "scope": "Registrants under the Foreign Agents Registration Act and the foreign principals they represent",
+      "languages": [
+        "en"
+      ],
+      "rights": "U.S. government data, public domain",
+      "status": "implemented",
+      "adapter": "fara-efile-api",
+      "last_checked": "2026-11-15",
+      "notes": "Searches active registrants by name; get returns a registrant with its active foreign principals.",
+      "fit": {
+        "request_types": {
+          "actor_research": "primary"
+        },
+        "regions": [
+          "United States"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Public, no key"
+        },
+        "relevance": {
+          "score": 3,
+          "reason": "Indirect evidence: who is registered to act for which foreign principal"
+        },
+        "evidence": {
+          "score": 5,
+          "reason": "Official statutory record"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Updated as filings are accepted"
+        },
+        "rights": {
+          "score": 5,
+          "reason": "Public domain"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "Endpoint and JSON shape verified against the live response and docs; not run through this adapter live"
+        }
+      },
+      "smoke_tests": []
     },
     {
       "id": "checkfirst-radar-api",
       "offering": "CheckFirst RADAR API",
-      "organizations": ["CheckFirst"],
+      "organizations": [
+        "CheckFirst"
+      ],
       "interface": "api",
       "protocol": "HTTPS",
-      "endpoint": "https://api.radar.checkfirst.network",
-      "evidence_urls": ["https://radar.checkfirst.network/news/2025-08-14-api-release"],
-      "access": "See provider documentation",
-      "auth_model": "unknown",
+      "endpoint": "https://api.radar.checkfirst.network/api/v1",
+      "evidence_urls": [
+        "https://api.radar.checkfirst.network/api/v1/swagger.yaml",
+        "https://radar.checkfirst.network/news/2025-08-14-api-release"
+      ],
+      "access": "Public, no key; descriptive User-Agent required; 100 requests per minute per IP",
+      "auth_model": "none",
+      "cost": "Free",
+      "scope": "RADAR framework: potential Digital Services Act infringements with observable indicators (a taxonomy, not news items)",
+      "languages": [
+        "en"
+      ],
+      "rights": "CC BY 4.0",
+      "status": "implemented",
+      "adapter": "checkfirst-radar-api",
+      "last_checked": "2026-11-15",
+      "notes": "Useful for classifying platform behaviour against the DSA, not for checking a specific claim. Exceeding the rate limit blocks the IP for 24 hours.",
+      "fit": {
+        "request_types": {
+          "narrative_tracking": "secondary"
+        },
+        "regions": [
+          "Europe"
+        ],
+        "languages": [
+          "en"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Public, no key"
+        },
+        "relevance": {
+          "score": 2,
+          "reason": "A taxonomy of DSA infringements; helps classify behaviour, does not judge items"
+        },
+        "evidence": {
+          "score": 4,
+          "reason": "Documented framework maintained by CheckFirst"
+        },
+        "freshness": {
+          "score": 2,
+          "reason": "Versioned framework, revised occasionally"
+        },
+        "rights": {
+          "score": 5,
+          "reason": "CC BY 4.0"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "OpenAPI (swagger.yaml) verified; not live-tested"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "chronoverify-mcp",
+      "offering": "ChronoVerify MCP",
+      "organizations": [
+        "ChronoVerify"
+      ],
+      "interface": "mcp",
+      "protocol": "MCP",
+      "endpoint": "https://chronoverify.com/mcp/http",
+      "evidence_urls": [
+        "https://chronoverify.com/docs",
+        "https://chronoverify.com/.well-known/mcp.json",
+        "https://chronoverify.com/openapi.json",
+        "https://chronoverify.com/terms"
+      ],
+      "access": "Keyless evaluation with a per-IP rate limit; free key gives 100 verifications a month; paid use per image",
+      "auth_model": "optional_api_key",
+      "cost": "Evaluation free; production keyed",
+      "scope": "Image provenance: C2PA, capture metadata consistency and pixel forensics, with a verdict and confidence",
+      "languages": [],
+      "rights": "Terms: submit only content you have rights to; no automated decisions based solely on a verdict",
+      "status": "implemented",
+      "adapter": "chronoverify-mcp",
+      "last_checked": "2026-11-15",
+      "notes": "Adapter calls the documented REST equivalent (POST /v1/verify) of the hosted MCP tool verify_image.",
+      "fit": {
+        "request_types": {
+          "media_authenticity": "primary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "image",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Keyless evaluation (rate limited); optional free key"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Itemized analysis of a submitted image"
+        },
+        "evidence": {
+          "score": 3,
+          "reason": "Documented signals including C2PA verification; no published accuracy study"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "On demand"
+        },
+        "rights": {
+          "score": 3,
+          "reason": "Terms allow use of results; redistribution not addressed"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "OpenAPI and response schema verified; not live-tested"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "correctiv-sanctions",
+      "offering": "CORRECTIV Russia sanctions dashboard data",
+      "organizations": [
+        "CORRECTIV"
+      ],
+      "interface": "download",
+      "protocol": "GitHub repository",
+      "endpoint": "https://raw.githubusercontent.com/correctiv/ru-sanctions-dashboard/main/src/data/sanctions_2014-2022.csv",
+      "evidence_urls": [
+        "https://github.com/correctiv/ru-sanctions-dashboard",
+        "https://raw.githubusercontent.com/correctiv/ru-sanctions-dashboard/main/src/data/meta.json"
+      ],
+      "access": "Public repository, no key",
+      "auth_model": "none",
+      "cost": "Free",
+      "scope": "Persons, companies and others sanctioned in connection with Russia since 2014 (about 34,000 listings), with authority and source link",
+      "languages": [],
+      "rights": "MIT licence (repository); compiled from OpenSanctions",
+      "status": "live_tested",
+      "adapter": "correctiv-sanctions",
+      "last_checked": "2026-11-15",
+      "notes": "Investigative/general structured data, not fact-checks. Data last updated 2024-01-20; use OpenSanctions for current listings.",
+      "fit": {
+        "request_types": {
+          "actor_research": "primary"
+        },
+        "regions": [
+          "Russia and Ukraine",
+          "Europe"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 5,
+          "reason": "Public file, no key"
+        },
+        "relevance": {
+          "score": 3,
+          "reason": "Indirect evidence for who is behind content: sanctioned persons and companies"
+        },
+        "evidence": {
+          "score": 4,
+          "reason": "Compiled from official sanctions lists via OpenSanctions"
+        },
+        "freshness": {
+          "score": 1,
+          "reason": "Last updated January 2024"
+        },
+        "rights": {
+          "score": 5,
+          "reason": "MIT"
+        },
+        "reliability": {
+          "score": 5,
+          "reason": "Live-tested from this server's build environment on 2026-11-15"
+        }
+      },
+      "smoke_tests": [
+        {
+          "date": "2026-11-15",
+          "mode": "keyless HTTPS from the build environment (tests/live.test.ts)",
+          "operation": "search \"rosneft\"",
+          "result": "15 matches; first item \"Rosneft\" with category, start date, authority and source link"
+        }
+      ]
+    },
+    {
+      "id": "factiverse-mcp",
+      "offering": "Factiverse fact-check MCP and API",
+      "organizations": [
+        "Factiverse"
+      ],
+      "interface": "mcp",
+      "protocol": "MCP (self-hostable example); REST",
+      "endpoint": "https://api.factiverse.ai",
+      "evidence_urls": [
+        "https://api.factiverse.ai/v1/openapi.json",
+        "https://github.com/factiverse/factiverse_fact_check_mcp"
+      ],
+      "access": "Bearer token issued by Factiverse (no self-serve signup documented)",
+      "auth_model": "api_key",
       "cost": "Unknown",
-      "scope": "Pilot API candidate named in issue #1",
+      "scope": "Search of published fact-checks (claim_search) and automated claim detection with stance against evidence (fact_check)",
       "languages": [],
       "rights": "Unconfirmed",
-      "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "Second API pilot candidate."
+      "status": "implemented",
+      "adapter": "factiverse-mcp",
+      "last_checked": "2026-11-15",
+      "notes": "Production base URL inferred from the docs host; the MCP example defaults to dev.factiverse.ai. Set FACTIVERSE_ENDPOINT if Factiverse gives another.",
+      "fit": {
+        "request_types": {
+          "claim_check": "primary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 2,
+          "reason": "Token issued by the provider"
+        },
+        "relevance": {
+          "score": 5,
+          "reason": "Itemized fact-checks and claim verdicts"
+        },
+        "evidence": {
+          "score": 3,
+          "reason": "Automated stance detection with published research; search returns human fact-checks"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Continuously indexed"
+        },
+        "rights": {
+          "score": 1,
+          "reason": "Terms not found"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "OpenAPI verified; not live-tested"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "meedan-check-api",
+      "offering": "Meedan Check API (source)",
+      "organizations": [
+        "Meedan"
+      ],
+      "interface": "api",
+      "protocol": "GraphQL (self-hosted platform)",
+      "endpoint": "https://check-api.checkmedia.org/api/graphql",
+      "evidence_urls": [
+        "https://github.com/meedan/check-api",
+        "https://github.com/meedan/check/wiki/Authentication-and-authorization-on-Check-API"
+      ],
+      "access": "API key from a Check workspace owner (the hosted platform or a self-hosted one); no shared public dataset",
+      "auth_model": "api_key",
+      "cost": "Free software",
+      "scope": "Items and published fact-checks in one partner's Check workspace",
+      "languages": [],
+      "rights": "See repository license",
+      "status": "implemented",
+      "adapter": "meedan-check-api",
+      "last_checked": "2026-11-15",
+      "notes": "Useful only with a partner newsroom's workspace key. Keys carry editor rights; the adapter sends queries only.",
+      "fit": {
+        "request_types": {
+          "claim_check": "primary",
+          "media_authenticity": "secondary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 2,
+          "reason": "Needs a partner workspace's key"
+        },
+        "relevance": {
+          "score": 5,
+          "reason": "Itemized fact-checks"
+        },
+        "evidence": {
+          "score": 4,
+          "reason": "Newsroom workflow with editorial review"
+        },
+        "freshness": {
+          "score": 4,
+          "reason": "As current as the workspace"
+        },
+        "rights": {
+          "score": 2,
+          "reason": "Workspace owner's terms"
+        },
+        "reliability": {
+          "score": 3,
+          "reason": "Schema read from source code; not live-tested"
+        }
+      },
+      "smoke_tests": []
     },
     {
       "id": "aiornot-mcp",
       "offering": "AI or Not detection MCP",
-      "organizations": ["AI or Not"],
+      "organizations": [
+        "AI or Not"
+      ],
       "interface": "mcp",
       "protocol": "MCP",
-      "endpoint": null,
-      "evidence_urls": ["https://www.aiornot.com/ai-detection-mcp"],
-      "access": "API key; plan limits",
+      "endpoint": "https://api.aiornot.com",
+      "evidence_urls": [
+        "https://www.aiornot.com/ai-detection-mcp",
+        "https://docs.aiornot.com/api-reference/openapi.yaml"
+      ],
+      "access": "API key; plan limits (1-5 requests per second)",
       "auth_model": "api_key",
       "cost": "Plan-based",
-      "scope": "AI-generated content detection",
+      "scope": "AI-generated image, deepfake and AI text detection",
+      "languages": [],
+      "rights": "Unconfirmed",
+      "status": "implemented",
+      "adapter": "aiornot-mcp",
+      "last_checked": "2026-11-15",
+      "notes": "Adapter uses the REST API: images are downloaded (https only, 10 MB, image types) and uploaded, because the API has no analyze-by-URL. Text needs 250 or more characters.",
+      "fit": {
+        "request_types": {
+          "media_authenticity": "primary",
+          "ai_text": "secondary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "image",
+          "text",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 3,
+          "reason": "Paid self-serve key"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Itemized analysis of submitted media"
+        },
+        "evidence": {
+          "score": 2,
+          "reason": "Proprietary models; vendor-reported accuracy"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "On demand"
+        },
+        "rights": {
+          "score": 3,
+          "reason": "API terms cover use of results"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "OpenAPI verified; not live-tested"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "realitydefender-mcp",
+      "offering": "Reality Defender MCP server",
+      "organizations": [
+        "Reality Defender"
+      ],
+      "interface": "mcp",
+      "protocol": "MCP (self-hosted)",
+      "endpoint": "https://api.prd.realitydefender.xyz",
+      "evidence_urls": [
+        "https://github.com/Reality-Defender/eng-mcp-server",
+        "https://docs.realitydefender.com/api-reference/endpoint/social"
+      ],
+      "access": "API key; free plan covers images only",
+      "auth_model": "api_key",
+      "cost": "Unknown",
+      "scope": "Deepfake and manipulated media detection",
+      "languages": [],
+      "rights": "Unconfirmed",
+      "status": "implemented",
+      "adapter": "realitydefender-mcp",
+      "last_checked": "2026-11-15",
+      "notes": "By-URL analysis accepts social media links (Facebook, Instagram, X, YouTube, TikTok, Threads). Results are polled; a pending result returns a report_id to collect later.",
+      "fit": {
+        "request_types": {
+          "media_authenticity": "primary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "image",
+          "video",
+          "audio",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 4,
+          "reason": "Free self-serve key (images); paid for video and audio"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Itemized analysis of submitted media"
+        },
+        "evidence": {
+          "score": 2,
+          "reason": "Proprietary model ensemble; vendor-reported accuracy"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "On demand"
+        },
+        "rights": {
+          "score": 3,
+          "reason": "API terms cover use of results"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "API reference verified; not live-tested"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "pangram-mcp",
+      "offering": "Pangram Labs MCP",
+      "organizations": [
+        "Pangram Labs"
+      ],
+      "interface": "mcp",
+      "protocol": "MCP",
+      "endpoint": "https://text.external-api.pangram.com",
+      "evidence_urls": [
+        "https://www.pangram.com/solutions/mcp",
+        "https://docs.pangram.com/api-reference/ai-detection"
+      ],
+      "access": "API key; paid credits",
+      "auth_model": "api_key",
+      "cost": "Paid credits",
+      "scope": "AI-generated text detection",
+      "languages": [],
+      "rights": "Unconfirmed",
+      "status": "implemented",
+      "adapter": "pangram-mcp",
+      "last_checked": "2026-11-15",
+      "notes": "Adapter uses the REST task API (submit, then poll).",
+      "fit": {
+        "request_types": {
+          "ai_text": "primary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 3,
+          "reason": "Paid self-serve key"
+        },
+        "relevance": {
+          "score": 3,
+          "reason": "Whether text is AI-written is indirect evidence about a claim"
+        },
+        "evidence": {
+          "score": 3,
+          "reason": "Automated model with a published technical report"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "On demand"
+        },
+        "rights": {
+          "score": 3,
+          "reason": "API terms cover use of results"
+        },
+        "reliability": {
+          "score": 4,
+          "reason": "API reference verified; not live-tested"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "deepmedia-api",
+      "offering": "Deep Media API (advertised MCP)",
+      "organizations": [
+        "Deep Media"
+      ],
+      "interface": "mcp",
+      "protocol": "MCP (advertised); API",
+      "endpoint": "https://api.deepidentify.ai",
+      "evidence_urls": [
+        "https://deepmedia.ai/documentation"
+      ],
+      "access": "Key issued by Deep Media on request",
+      "auth_model": "api_key",
+      "cost": "Commercial",
+      "scope": "Deepfake detection",
+      "languages": [],
+      "rights": "Unconfirmed",
+      "status": "implemented",
+      "adapter": "deepmedia-api",
+      "last_checked": "2026-11-15",
+      "notes": "Submission by public URL (webLocation) appears in the API overview but not the quick start; unconfirmed until a live test with a key.",
+      "fit": {
+        "request_types": {
+          "media_authenticity": "primary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "image",
+          "video",
+          "audio",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 2,
+          "reason": "Key on request"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Itemized analysis of submitted media"
+        },
+        "evidence": {
+          "score": 2,
+          "reason": "Proprietary model; scores without verdicts"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "On demand"
+        },
+        "rights": {
+          "score": 1,
+          "reason": "Terms not found"
+        },
+        "reliability": {
+          "score": 2,
+          "reason": "By-URL submission unconfirmed"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "blackbird-mcp",
+      "offering": "Blackbird.AI MCP server",
+      "organizations": [
+        "Blackbird.AI"
+      ],
+      "interface": "mcp",
+      "protocol": "MCP",
+      "endpoint": "https://api.blackbird.ai/compass",
+      "evidence_urls": [
+        "https://blackbird.ai/mcp/",
+        "https://github.com/blackbirdai-team/blackbird-mcp-server"
+      ],
+      "access": "Commercial; Compass client key and secret",
+      "auth_model": "api_key",
+      "cost": "Commercial",
+      "scope": "Narrative intelligence",
+      "languages": [],
+      "rights": "Customer terms",
+      "status": "implemented",
+      "adapter": "blackbird-mcp",
+      "last_checked": "2026-11-15",
+      "notes": "The official MCP server runs over stdio and wraps the Compass REST API; the adapter calls the same endpoints (contextChecks for text, visionAnalyses for images).",
+      "fit": {
+        "request_types": {
+          "narrative_tracking": "primary",
+          "claim_check": "secondary",
+          "media_authenticity": "secondary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text",
+          "image",
+          "url"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 1,
+          "reason": "Commercial contract"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Itemized context checks and image analyses"
+        },
+        "evidence": {
+          "score": 2,
+          "reason": "Proprietary method"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "On demand"
+        },
+        "rights": {
+          "score": 2,
+          "reason": "Customer terms"
+        },
+        "reliability": {
+          "score": 3,
+          "reason": "Endpoints read from the official server code; not live-tested"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "euvsdisinfo",
+      "offering": "EUvsDisinfo database access",
+      "organizations": [
+        "EUvsDisinfo"
+      ],
+      "interface": "api",
+      "protocol": "MCP (by request)",
+      "endpoint": null,
+      "evidence_urls": [
+        "https://euvsdisinfo.eu/about/"
+      ],
+      "access": "MCP server credentials by email request to EUvsDisinfo",
+      "auth_model": "request_access",
+      "cost": "Unknown",
+      "scope": "EUvsDisinfo database of pro-Kremlin disinformation cases with disproofs",
       "languages": [],
       "rights": "Unconfirmed",
       "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": null
+      "adapter": "euvsdisinfo",
+      "last_checked": "2026-11-15",
+      "notes": "The about page offers an MCP server by request only; endpoint and tool names come with the credentials. Third-party scraped datasets exist (Mendeley, Zenodo) but are not official.",
+      "fit": {
+        "request_types": {
+          "claim_check": "primary",
+          "narrative_tracking": "primary",
+          "actor_research": "secondary"
+        },
+        "regions": [
+          "Russia and Ukraine",
+          "Europe"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 2,
+          "reason": "Credentials by request"
+        },
+        "relevance": {
+          "score": 5,
+          "reason": "Itemized disinformation cases with disproofs"
+        },
+        "evidence": {
+          "score": 4,
+          "reason": "Documented editorial work by the EEAS East StratCom Task Force"
+        },
+        "freshness": {
+          "score": 4,
+          "reason": "New cases weekly"
+        },
+        "rights": {
+          "score": 1,
+          "reason": "Terms not published"
+        },
+        "reliability": {
+          "score": 2,
+          "reason": "MCP advertised; endpoint not public"
+        }
+      },
+      "smoke_tests": []
     },
     {
       "id": "alethea-mcp",
       "offering": "Alethea Artemis MCP server and REST API",
-      "organizations": ["Alethea"],
+      "organizations": [
+        "Alethea"
+      ],
       "interface": "mcp",
       "protocol": "MCP; REST",
       "endpoint": null,
-      "evidence_urls": ["https://alethea.com/insights/alethea-releases-mcp-server-and-rest-api-putting-artemis-threat-intelligence-inside-customers-existing-tools"],
+      "evidence_urls": [
+        "https://alethea.com/insights/alethea-releases-mcp-server-and-rest-api-putting-artemis-threat-intelligence-inside-customers-existing-tools"
+      ],
       "access": "Commercial customer through account team",
       "auth_model": "commercial",
       "cost": "Commercial",
@@ -75,170 +1527,64 @@
       "languages": [],
       "rights": "Customer terms",
       "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "Partner/commercial lane."
-    },
-    {
-      "id": "blackbird-mcp",
-      "offering": "Blackbird.AI MCP server",
-      "organizations": ["Blackbird.AI"],
-      "interface": "mcp",
-      "protocol": "MCP",
-      "endpoint": null,
-      "evidence_urls": ["https://blackbird.ai/mcp/", "https://github.com/blackbirdai-team/blackbird-mcp-server"],
-      "access": "Commercial; API key",
-      "auth_model": "api_key",
-      "cost": "Commercial",
-      "scope": "Narrative intelligence",
-      "languages": [],
-      "rights": "Customer terms",
-      "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "Partner/commercial lane."
-    },
-    {
-      "id": "chronoverify-mcp",
-      "offering": "ChronoVerify MCP",
-      "organizations": ["ChronoVerify"],
-      "interface": "mcp",
-      "protocol": "MCP",
-      "endpoint": "https://chronoverify.com/.well-known/mcp.json",
-      "evidence_urls": ["https://chronoverify.com/docs", "https://chronoverify.com/.well-known/mcp.json"],
-      "access": "Keyless limited evaluation; production key",
-      "auth_model": "optional_api_key",
-      "cost": "Evaluation free; production keyed",
-      "scope": "Verification",
-      "languages": [],
-      "rights": "Unconfirmed",
-      "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "MCP pilot candidate."
-    },
-    {
-      "id": "deepmedia-api",
-      "offering": "Deep Media API (advertised MCP)",
-      "organizations": ["Deep Media"],
-      "interface": "mcp",
-      "protocol": "MCP (advertised); API",
-      "endpoint": null,
-      "evidence_urls": ["https://deepmedia.ai/documentation"],
-      "access": "Contact provider; token",
-      "auth_model": "api_key",
-      "cost": "Commercial",
-      "scope": "Deepfake detection",
-      "languages": [],
-      "rights": "Unconfirmed",
-      "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "Advertised MCP, not a publicly tested endpoint."
-    },
-    {
-      "id": "euvsdisinfo",
-      "offering": "EUvsDisinfo database access",
-      "organizations": ["EUvsDisinfo"],
-      "interface": "api",
-      "protocol": "Unknown",
-      "endpoint": null,
-      "evidence_urls": ["https://euvsdisinfo.eu/about/"],
-      "access": "Request-only credentials",
-      "auth_model": "request_access",
-      "cost": "Unknown",
-      "scope": "Pro-Kremlin disinformation case database",
-      "languages": [],
-      "rights": "Unconfirmed",
-      "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "One shared offering for three directory labels; the other two labels are not named in issue #1."
-    },
-    {
-      "id": "factiverse-mcp",
-      "offering": "Factiverse fact-check MCP and API",
-      "organizations": ["Factiverse"],
-      "interface": "mcp",
-      "protocol": "MCP (self-hostable example); REST",
-      "endpoint": "https://api.factiverse.ai/v1",
-      "evidence_urls": ["https://github.com/factiverse/factiverse_fact_check_mcp", "https://api.factiverse.ai/v1/redoc"],
-      "access": "Credentials",
-      "auth_model": "api_key",
-      "cost": "Unknown",
-      "scope": "Claim detection and fact-check search",
-      "languages": [],
-      "rights": "Unconfirmed",
-      "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "MCP pilot candidate."
-    },
-    {
-      "id": "gopie-mcp",
-      "offering": "GoPie MCP (FACTLY)",
-      "organizations": ["FACTLY"],
-      "interface": "mcp",
-      "protocol": "MCP",
-      "endpoint": null,
-      "evidence_urls": ["https://gopie.ai/docs/api/mcp-overview/"],
-      "access": "Self-hosting or managed access",
-      "auth_model": "self_hosted",
-      "cost": "Unknown",
-      "scope": "General data analysis; not direct access to FACTLY's fact-check archive",
-      "languages": [],
-      "rights": "Unconfirmed",
-      "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": null
-    },
-    {
-      "id": "meltwater-mcp",
-      "offering": "Meltwater MCP",
-      "organizations": ["Meltwater"],
-      "interface": "mcp",
-      "protocol": "MCP",
-      "endpoint": null,
-      "evidence_urls": ["https://developer.meltwater.com/guides/meltwater-mcp/overview/"],
-      "access": "Paid API customer plus MCP package",
-      "auth_model": "commercial",
-      "cost": "Commercial",
-      "scope": "Media monitoring",
-      "languages": [],
-      "rights": "Customer terms",
-      "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "Partner/commercial lane."
-    },
-    {
-      "id": "pangram-mcp",
-      "offering": "Pangram Labs MCP",
-      "organizations": ["Pangram Labs"],
-      "interface": "mcp",
-      "protocol": "MCP",
-      "endpoint": null,
-      "evidence_urls": ["https://www.pangram.com/solutions/mcp"],
-      "access": "Account/OAuth; paid API credits",
-      "auth_model": "oauth",
-      "cost": "Paid credits",
-      "scope": "AI-generated text detection",
-      "languages": [],
-      "rights": "Unconfirmed",
-      "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": null
+      "adapter": "alethea-mcp",
+      "last_checked": "2026-11-15",
+      "notes": "Partner/commercial lane. Generic MCP adapter: set the endpoint, key and search tool name from onboarding.",
+      "fit": {
+        "request_types": {
+          "narrative_tracking": "primary",
+          "actor_research": "secondary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 1,
+          "reason": "Commercial contract"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Narrative and actor analysis"
+        },
+        "evidence": {
+          "score": 2,
+          "reason": "Proprietary method"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Continuous"
+        },
+        "rights": {
+          "score": 2,
+          "reason": "Customer terms"
+        },
+        "reliability": {
+          "score": 2,
+          "reason": "Announced; customer-only documentation"
+        }
+      },
+      "smoke_tests": []
     },
     {
       "id": "peakmetrics-mcp",
       "offering": "PeakMetrics MCP server",
-      "organizations": ["PeakMetrics"],
+      "organizations": [
+        "PeakMetrics"
+      ],
       "interface": "mcp",
       "protocol": "MCP",
       "endpoint": null,
-      "evidence_urls": ["https://www.peakmetrics.com/insights/mcp_server_launch"],
+      "evidence_urls": [
+        "https://www.peakmetrics.com/insights/mcp_server_launch"
+      ],
       "access": "Commercial customer permissions",
       "auth_model": "commercial",
       "cost": "Commercial",
@@ -246,37 +1592,127 @@
       "languages": [],
       "rights": "Customer terms",
       "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "Partner/commercial lane."
+      "adapter": "peakmetrics-mcp",
+      "last_checked": "2026-11-15",
+      "notes": "Partner/commercial lane. Generic MCP adapter: set the endpoint, key and search tool name from onboarding.",
+      "fit": {
+        "request_types": {
+          "narrative_tracking": "primary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 1,
+          "reason": "Commercial contract"
+        },
+        "relevance": {
+          "score": 4,
+          "reason": "Narrative analysis"
+        },
+        "evidence": {
+          "score": 2,
+          "reason": "Proprietary method"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Continuous"
+        },
+        "rights": {
+          "score": 2,
+          "reason": "Customer terms"
+        },
+        "reliability": {
+          "score": 2,
+          "reason": "Announced; customer-only documentation"
+        }
+      },
+      "smoke_tests": []
     },
     {
-      "id": "realitydefender-mcp",
-      "offering": "Reality Defender MCP server",
-      "organizations": ["Reality Defender"],
+      "id": "meltwater-mcp",
+      "offering": "Meltwater MCP",
+      "organizations": [
+        "Meltwater"
+      ],
       "interface": "mcp",
-      "protocol": "MCP (self-hosted)",
+      "protocol": "MCP",
       "endpoint": null,
-      "evidence_urls": ["https://github.com/Reality-Defender/eng-mcp-server"],
-      "access": "API key; self-hosted MCP",
-      "auth_model": "api_key",
-      "cost": "Unknown",
-      "scope": "Deepfake detection",
+      "evidence_urls": [
+        "https://developer.meltwater.com/guides/meltwater-mcp/overview/"
+      ],
+      "access": "Paid API customer plus MCP package",
+      "auth_model": "commercial",
+      "cost": "Commercial",
+      "scope": "Media monitoring",
       "languages": [],
-      "rights": "Unconfirmed",
+      "rights": "Customer terms",
       "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "MCP pilot candidate."
+      "adapter": "meltwater-mcp",
+      "last_checked": "2026-11-15",
+      "notes": "Partner/commercial lane. Generic MCP adapter: set the endpoint, key and search tool name from onboarding.",
+      "fit": {
+        "request_types": {
+          "narrative_tracking": "secondary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 1,
+          "reason": "Commercial contract"
+        },
+        "relevance": {
+          "score": 2,
+          "reason": "Media monitoring data that needs analysis"
+        },
+        "evidence": {
+          "score": 2,
+          "reason": "Proprietary method"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Continuous"
+        },
+        "rights": {
+          "score": 2,
+          "reason": "Customer terms"
+        },
+        "reliability": {
+          "score": 3,
+          "reason": "Documented for customers"
+        }
+      },
+      "smoke_tests": []
     },
     {
       "id": "recordedfuture-mcp",
       "offering": "Recorded Future MCP",
-      "organizations": ["Recorded Future"],
+      "organizations": [
+        "Recorded Future"
+      ],
       "interface": "mcp",
       "protocol": "MCP",
       "endpoint": null,
-      "evidence_urls": ["https://support.recordedfuture.com/hc/en-us/articles/55744099282963-Recorded-Future-MCP-Overview"],
+      "evidence_urls": [
+        "https://support.recordedfuture.com/hc/en-us/articles/55744099282963-Recorded-Future-MCP-Overview"
+      ],
       "access": "Account/OAuth and module entitlements",
       "auth_model": "oauth",
       "cost": "Commercial",
@@ -284,18 +1720,64 @@
       "languages": [],
       "rights": "Customer terms",
       "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "Partner/commercial lane."
+      "adapter": "recordedfuture-mcp",
+      "last_checked": "2026-11-15",
+      "notes": "Partner/commercial lane. Generic MCP adapter: set the endpoint, key and search tool name from onboarding.",
+      "fit": {
+        "request_types": {
+          "actor_research": "secondary",
+          "narrative_tracking": "secondary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 1,
+          "reason": "Commercial contract"
+        },
+        "relevance": {
+          "score": 2,
+          "reason": "Threat intelligence; information operations are one module"
+        },
+        "evidence": {
+          "score": 2,
+          "reason": "Proprietary method"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Continuous"
+        },
+        "rights": {
+          "score": 2,
+          "reason": "Customer terms"
+        },
+        "reliability": {
+          "score": 3,
+          "reason": "Documented for customers"
+        }
+      },
+      "smoke_tests": []
     },
     {
       "id": "signalai-integrations",
       "offering": "Signal AI integrations",
-      "organizations": ["Signal AI"],
+      "organizations": [
+        "Signal AI"
+      ],
       "interface": "mcp",
       "protocol": "MCP; integrations",
       "endpoint": null,
-      "evidence_urls": ["https://signal-ai.com/products-services/integrations"],
+      "evidence_urls": [
+        "https://signal-ai.com/products-services/integrations"
+      ],
       "access": "Commercial customer access",
       "auth_model": "commercial",
       "cost": "Commercial",
@@ -303,19 +1785,127 @@
       "languages": [],
       "rights": "Customer terms",
       "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "Partner/commercial lane."
+      "adapter": "signalai-integrations",
+      "last_checked": "2026-11-15",
+      "notes": "Partner/commercial lane. Generic MCP adapter: set the endpoint, key and search tool name from onboarding.",
+      "fit": {
+        "request_types": {
+          "narrative_tracking": "secondary"
+        },
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 1,
+          "reason": "Commercial contract"
+        },
+        "relevance": {
+          "score": 2,
+          "reason": "Media and risk monitoring data"
+        },
+        "evidence": {
+          "score": 2,
+          "reason": "Proprietary method"
+        },
+        "freshness": {
+          "score": 5,
+          "reason": "Continuous"
+        },
+        "rights": {
+          "score": 2,
+          "reason": "Customer terms"
+        },
+        "reliability": {
+          "score": 2,
+          "reason": "Announced; customer-only documentation"
+        }
+      },
+      "smoke_tests": []
+    },
+    {
+      "id": "gopie-mcp",
+      "offering": "GoPie MCP (FACTLY)",
+      "organizations": [
+        "FACTLY"
+      ],
+      "interface": "mcp",
+      "protocol": "MCP",
+      "endpoint": null,
+      "evidence_urls": [
+        "https://gopie.ai/docs/api/mcp-overview/"
+      ],
+      "access": "Self-hosting or managed access",
+      "auth_model": "self_hosted",
+      "cost": "Unknown",
+      "scope": "General data analysis; not direct access to FACTLY's fact-check archive",
+      "languages": [],
+      "rights": "Unconfirmed",
+      "status": "discovered",
+      "adapter": "gopie-mcp",
+      "last_checked": "2026-11-15",
+      "notes": "General data analysis over datasets loaded into a GoPie instance; not FACTLY's fact-check archive. Generic MCP adapter for a self-hosted instance; never recommended.",
+      "fit": {
+        "request_types": {},
+        "regions": [
+          "Global"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 0,
+          "reason": "Self-hosted or managed instance; no shared data"
+        },
+        "relevance": {
+          "score": 1,
+          "reason": "General data analysis"
+        },
+        "evidence": {
+          "score": 1,
+          "reason": "Depends on the loaded data"
+        },
+        "freshness": {
+          "score": 0,
+          "reason": "Unknown"
+        },
+        "rights": {
+          "score": 1,
+          "reason": "Unconfirmed"
+        },
+        "reliability": {
+          "score": 3,
+          "reason": "Documented"
+        }
+      },
+      "smoke_tests": []
     },
     {
       "id": "edmo-exports",
       "offering": "EDMO fact-check archive exports",
-      "organizations": ["European Digital Media Observatory"],
+      "organizations": [
+        "European Digital Media Observatory"
+      ],
       "interface": "download",
       "protocol": "File exports",
       "endpoint": null,
-      "evidence_urls": ["https://edmo.eu/wp-content/uploads/2024/12/D.17_Public-report_M24.pdf", "https://belux.edmo.eu/fact-checking/visualizations/"],
-      "access": "Public reports and visualizations",
+      "evidence_urls": [
+        "https://edmo.eu/wp-content/uploads/2024/12/D.17_Public-report_M24.pdf",
+        "https://belux.edmo.eu/fact-checking/visualizations/"
+      ],
+      "access": "Public web widget with a manual download option; no API or feed",
       "auth_model": "none",
       "cost": "Free",
       "scope": "European fact-check archive; BELUX hub visualizations",
@@ -323,46 +1913,49 @@
       "rights": "Unconfirmed",
       "status": "discovered",
       "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "Feed/download pilot candidate."
-    },
-    {
-      "id": "correctiv-sanctions",
-      "offering": "CORRECTIV Russia sanctions dashboard data",
-      "organizations": ["CORRECTIV"],
-      "interface": "download",
-      "protocol": "GitHub repository",
-      "endpoint": "https://github.com/correctiv/ru-sanctions-dashboard",
-      "evidence_urls": ["https://github.com/correctiv/ru-sanctions-dashboard"],
-      "access": "Public repository",
-      "auth_model": "none",
-      "cost": "Free",
-      "scope": "Investigative/general structured data, not a fact-check API",
-      "languages": [],
-      "rights": "See repository license",
-      "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": null
-    },
-    {
-      "id": "meedan-check-api",
-      "offering": "Meedan Check API (source)",
-      "organizations": ["Meedan"],
-      "interface": "api",
-      "protocol": "GraphQL (self-hosted platform)",
-      "endpoint": null,
-      "evidence_urls": ["https://github.com/meedan/check-api"],
-      "access": "Self-hosted platform; no shared public dataset",
-      "auth_model": "self_hosted",
-      "cost": "Free software",
-      "scope": "Evaluating a self-hosted verification platform only",
-      "languages": [],
-      "rights": "See repository license",
-      "status": "discovered",
-      "adapter": null,
-      "last_checked": "2026-11-12",
-      "notes": "Partner/commercial lane."
+      "last_checked": "2026-11-15",
+      "notes": "No machine-readable interface found (D.17 report; BELUX archive at belux-archives.ilabhub.atc.gr). Link-only until EDMO offers an export URL or feed.",
+      "fit": {
+        "request_types": {
+          "claim_check": "primary"
+        },
+        "regions": [
+          "Europe"
+        ],
+        "languages": [
+          "*"
+        ],
+        "media": [
+          "text"
+        ]
+      },
+      "ranking": {
+        "access": {
+          "score": 0,
+          "reason": "No machine-readable interface"
+        },
+        "relevance": {
+          "score": 5,
+          "reason": "Itemized fact-checks from European fact-checkers (13,000+ in 21 languages)"
+        },
+        "evidence": {
+          "score": 5,
+          "reason": "Fact-checks by EDMO hub members"
+        },
+        "freshness": {
+          "score": 3,
+          "reason": "Archive updated as hubs publish"
+        },
+        "rights": {
+          "score": 1,
+          "reason": "Terms not published"
+        },
+        "reliability": {
+          "score": 0,
+          "reason": "No interface to call"
+        }
+      },
+      "smoke_tests": []
     }
   ]
 }

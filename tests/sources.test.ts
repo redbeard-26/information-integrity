@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import { cofactsAdapter } from "@/lib/adapters/cofacts";
 import { type AdapterContext, ProviderError, excerpt } from "@/lib/adapters/types";
-import { SOURCE_REGISTRY, getResource, linkedRecords, listSources, searchResources, sourceCapabilities } from "@/lib/sources";
+import { ADAPTERS, SOURCE_REGISTRY, getResource, linkedRecords, listSources, searchResources, sourceCapabilities } from "@/lib/sources";
 
 function context(fetchImpl: (url: string, init: RequestInit) => Promise<Response>, env: Record<string, string> = { COFACTS_APP_ID: "test-app" }): AdapterContext {
-  return { fetch: fetchImpl as typeof fetch, env, now: () => new Date("2026-11-15T00:00:00Z"), timeoutMs: 50 };
+  return { fetch: fetchImpl as typeof fetch, env, now: () => new Date("2026-11-15T00:00:00Z"), timeoutMs: 50, sleep: async () => {}, pollBudgetMs: 0 };
 }
 
 const article = {
@@ -30,8 +30,17 @@ describe("source registry", () => {
     }
   });
 
-  it("marks nothing live-tested without a smoke-test record", () => {
-    expect(SOURCE_REGISTRY.sources.filter((source) => source.status === "live_tested")).toEqual([]);
+  it("marks a source live-tested only with a smoke-test record", () => {
+    for (const source of SOURCE_REGISTRY.sources.filter((item) => item.status === "live_tested")) {
+      expect(source.smoke_tests.length, source.id).toBeGreaterThan(0);
+    }
+  });
+
+  it("gives every source with an adapter a registered implementation", () => {
+    for (const source of SOURCE_REGISTRY.sources) {
+      if (source.adapter) expect(ADAPTERS[source.adapter], source.id).toBeDefined();
+    }
+    expect(Object.keys(ADAPTERS).every((id) => SOURCE_REGISTRY.sources.some((source) => source.adapter === id))).toBe(true);
   });
 
   it("links sources to directory records by name", () => {
@@ -57,7 +66,7 @@ describe("Cofacts adapter", () => {
       expect(JSON.parse(init.body as string).variables).toMatchObject({ text: "疫苗", first: 1 });
       return jsonResponse({ data: { ListArticles: { totalCount: 7, edges: [{ cursor: "c1", node: article }] } } });
     });
-    const page = await cofactsAdapter.search("疫苗", { limit: 1 }, context(fetchImpl));
+    const page = await cofactsAdapter.search!("疫苗", { limit: 1 }, context(fetchImpl));
     expect(page).toMatchObject({ total: 7, next_cursor: "c1" });
     expect(page.items[0]).toMatchObject({
       provider: "Cofacts",
@@ -78,14 +87,14 @@ describe("Cofacts adapter", () => {
 
   it("maps HTTP failures to provider errors", async () => {
     for (const [status, code] of [[401, "unauthorized"], [429, "rate_limited"], [503, "unavailable"], [400, "bad_response"]] as const) {
-      await expect(cofactsAdapter.search("q", { limit: 5 }, context(async () => new Response("", { status })))).rejects.toMatchObject({ code });
+      await expect(cofactsAdapter.search!("q", { limit: 5 }, context(async () => new Response("", { status })))).rejects.toMatchObject({ code });
     }
   });
 
   it("rejects malformed and error responses", async () => {
-    await expect(cofactsAdapter.search("q", { limit: 5 }, context(async () => new Response("<html>", { status: 200 })))).rejects.toMatchObject({ code: "bad_response" });
-    await expect(cofactsAdapter.search("q", { limit: 5 }, context(async () => jsonResponse({ errors: [{ message: "boom" }] })))).rejects.toThrow("boom");
-    await expect(cofactsAdapter.search("q", { limit: 5 }, context(async () => jsonResponse({ data: { ListArticles: { edges: "x" } } })))).rejects.toMatchObject({ code: "bad_response" });
+    await expect(cofactsAdapter.search!("q", { limit: 5 }, context(async () => new Response("<html>", { status: 200 })))).rejects.toMatchObject({ code: "bad_response" });
+    await expect(cofactsAdapter.search!("q", { limit: 5 }, context(async () => jsonResponse({ errors: [{ message: "boom" }] })))).rejects.toThrow("boom");
+    await expect(cofactsAdapter.search!("q", { limit: 5 }, context(async () => jsonResponse({ data: { ListArticles: { edges: "x" } } })))).rejects.toMatchObject({ code: "bad_response" });
   });
 
   it("times out slow providers", async () => {
@@ -93,21 +102,23 @@ describe("Cofacts adapter", () => {
       new Promise<Response>((_resolve, reject) => {
         init.signal?.addEventListener("abort", () => reject(Object.assign(new Error("aborted"), { name: "AbortError" })));
       });
-    await expect(cofactsAdapter.search("q", { limit: 5 }, context(slow))).rejects.toMatchObject({ code: "timeout" });
+    await expect(cofactsAdapter.search!("q", { limit: 5 }, context(slow))).rejects.toMatchObject({ code: "timeout" });
   });
 
   it("returns not_found for a missing article", async () => {
-    await expect(cofactsAdapter.get("zzz", context(async () => jsonResponse({ data: { GetArticle: null } })))).rejects.toMatchObject({ code: "not_found" });
+    await expect(cofactsAdapter.get!("zzz", context(async () => jsonResponse({ data: { GetArticle: null } })))).rejects.toMatchObject({ code: "not_found" });
   });
 });
 
 describe("unified search", () => {
   it("reports an unconfigured provider as skipped, not as an empty result", async () => {
-    const result = await searchResources("q", {}, context(vi.fn(), {}));
+    const fetchImpl = vi.fn();
+    const result = await searchResources("q", { sources: ["cofacts-graphql"] }, context(fetchImpl, {}));
     expect(result.items).toEqual([]);
     expect(result.providers).toEqual([
       { source_id: "cofacts-graphql", status: "skipped", error: { code: "not_configured", message: expect.any(String) } },
     ]);
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
   it("reports provider errors and unknown sources separately", async () => {
@@ -119,7 +130,7 @@ describe("unified search", () => {
   });
 
   it("returns items with per-provider counts", async () => {
-    const result = await searchResources("q", { limit: 5 }, context(async () => jsonResponse({ data: { ListArticles: { totalCount: 1, edges: [{ cursor: "c", node: article }] } } })));
+    const result = await searchResources("q", { limit: 5, sources: ["cofacts-graphql"] }, context(async () => jsonResponse({ data: { ListArticles: { totalCount: 1, edges: [{ cursor: "c", node: article }] } } })));
     expect(result.items).toHaveLength(1);
     expect(result.providers[0]).toMatchObject({ status: "ok", count: 1, next_cursor: null });
   });

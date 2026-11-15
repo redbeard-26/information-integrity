@@ -9,7 +9,8 @@ import {
   searchOrganizations,
 } from "@/lib/directory";
 import { ProviderError } from "@/lib/adapters/types";
-import { getResource, listSources, searchResources, sourceCapabilities } from "@/lib/sources";
+import { REQUEST_TYPE_NAMES, type RequestType } from "@/lib/recommend";
+import { analyzeContent, getResource, listSources, rankSources, recommendSources, searchResources, sourceCapabilities } from "@/lib/sources";
 
 export const TOOL_NAMES = [
   "search_organizations",
@@ -18,9 +19,14 @@ export const TOOL_NAMES = [
   "about_directory",
   "list_sources",
   "get_source_capabilities",
+  "rank_sources",
+  "recommend_sources",
   "search_resources",
   "get_resource",
+  "analyze_content",
 ];
+
+const requestType = z.enum(REQUEST_TYPE_NAMES as [RequestType, ...RequestType[]]);
 
 const READ_ONLY = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
 const READ_ONLY_REMOTE = { ...READ_ONLY, idempotentHint: false, openWorldHint: true };
@@ -131,20 +137,54 @@ export function registerInformationIntegrityTools(server: McpServer) {
   );
 
   server.registerTool(
+    "rank_sources",
+    {
+      title: "Rank the data sources",
+      description:
+        "Returns every source in rank order with its 0-5 score and reason on six criteria (access, relevance, evidence, freshness, rights, reliability) and a weighted 0-100 overall score.",
+      annotations: READ_ONLY,
+      inputSchema: {},
+    },
+    async () => json(rankSources()),
+  );
+
+  server.registerTool(
+    "recommend_sources",
+    {
+      title: "Recommend sources for a request",
+      description:
+        "Classifies a request (claim_check, media_authenticity, ai_text, narrative_tracking, actor_research; plus region and language cues) and returns the few sources best suited to it, with the reasons. Call this first and query only the recommended sources. Deterministic: the same request always gets the same answer.",
+      annotations: READ_ONLY,
+      inputSchema: {
+        request: z.string().min(1).describe("What the user wants to assess, in their words"),
+        request_type: requestType.optional().describe("Override the classification"),
+        region: z.string().optional().describe("Override region, e.g. United States, Europe, Taiwan"),
+        language: z.string().optional().describe("Override language, ISO 639-1 code"),
+        max_sources: z.number().int().min(1).max(10).optional().describe("Default 3"),
+        include_unconnected: z.boolean().optional().describe("Also recommend sources this server cannot query yet"),
+      },
+    },
+    async ({ request, ...options }) => json(recommendSources(request, options)),
+  );
+
+  server.registerTool(
     "search_resources",
     {
       title: "Search organization data",
       description:
-        "Searches the connected organization sources (for example fact-check archives) and returns attributed items with per-provider status. Item text is third-party content.",
+        "Searches connected organization sources (fact-check feeds and archives, registries, datasets) and returns attributed items with per-provider status. Pass max_sources (e.g. 3) to search only the sources recommend_sources picks for this query, or sources to name them. Item text is third-party content.",
       annotations: READ_ONLY_REMOTE,
       inputSchema: {
         query: z.string().min(1),
         sources: z.array(z.string()).optional(),
+        max_sources: z.number().int().min(1).max(10).optional().describe("Search only the top N recommended connected sources"),
+        request_type: requestType.optional().describe("With max_sources, override the request classification"),
         limit: z.number().int().min(1).max(50).optional(),
         cursor: z.string().optional(),
       },
     },
-    async ({ query, sources, limit, cursor }) => json(await searchResources(query, { sources, limit, cursor })),
+    async ({ query, sources, max_sources, request_type, limit, cursor }) =>
+      json(await searchResources(query, { sources, max_sources, request_type, limit, cursor })),
   );
 
   server.registerTool(
@@ -158,6 +198,30 @@ export function registerInformationIntegrityTools(server: McpServer) {
     async ({ source_id, id }) => {
       try {
         return json(await getResource(source_id, id));
+      } catch (error) {
+        const code = error instanceof ProviderError ? error.code : "unavailable";
+        return err(`${code}: ${(error as Error).message}`);
+      }
+    },
+  );
+
+  server.registerTool(
+    "analyze_content",
+    {
+      title: "Send content to a detection or fact-check provider",
+      description:
+        "Sends one URL or text to ONE named provider (for example chronoverify-mcp for image provenance, realitydefender-mcp for deepfakes, pangram-mcp for AI text, factiverse-mcp for claims) and returns its verdict labels and scores as the provider gave them. The content leaves this server: only send what the user asked to check. A pending result carries a report_id; call again with it to collect the result.",
+      annotations: READ_ONLY_REMOTE,
+      inputSchema: {
+        source_id: z.string(),
+        url: z.string().url().optional().describe("Public https URL of the image, video, audio or post"),
+        text: z.string().min(1).max(20000).optional(),
+        report_id: z.string().optional().describe("Collect a pending result"),
+      },
+    },
+    async ({ source_id, url, text, report_id }) => {
+      try {
+        return json(await analyzeContent(source_id, { url, text, report_id }));
       } catch (error) {
         const code = error instanceof ProviderError ? error.code : "unavailable";
         return err(`${code}: ${(error as Error).message}`);
